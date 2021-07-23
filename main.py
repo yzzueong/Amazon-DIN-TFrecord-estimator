@@ -4,8 +4,16 @@ import model
 from feature import *
 import config
 import input_data
+import json
 
 FLAGS = config.FLAGS
+
+tf.compat.v1.disable_eager_execution()
+
+if FLAGS.run_on_cluster:
+    cluster = json.loads(os.environ["TF_CONFIG"])
+    task_index = int(os.environ["TF_INDEX"])
+    task_type = os.environ["TF_ROLE"]
 
 def main(unused_argv):
     feature_configs = FeatureConfig().create_features_columns()
@@ -36,7 +44,8 @@ max_steps=FLAGS.train_steps)
         feature_spec = feature_configs.feature_spec
         feature_map = {}
         for key, feature in feature_spec.items():
-            if key not in fe.feature_configs:
+            #if key not in feature_configs.used_features:
+            if key == "label":
                 continue
             if isinstance(feature, tf.io.VarLenFeature):  # 可变长度
                 feature_map[key] = tf.placeholder(dtype=feature.dtype, shape=[1], name=key)
@@ -53,8 +62,7 @@ max_steps=FLAGS.train_steps)
         if task_type == "chief":
             export_model()
     else:
-        pass
-        #export_model()
+        export_model()
 
 
 if __name__ == "__main__":

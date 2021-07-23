@@ -33,5 +33,14 @@ python main.py
 you need confirm tfrecord dataset path and param "data_gen_method"("spark" or "python")  
 * you can change Two-Tower model to DIN model in main.py's model_fn
 
+## TFServing
+```
+docker pull tensorflow/serving:1.15.0
+docker run -t --rm -p 8501:8501 -v xxx/saved_model/:/models/test-model \
+  -e MODEL_NAME=test-model tensorflow/serving:1.15.0 &
+```
+
 ## Reference: 
-https://github.com/zhougr1993/DeepInterestNetwork.git
+https://github.com/zhougr1993/DeepInterestNetwork.git  
+https://zhuanlan.zhihu.com/p/129700488  
+https://github.com/cdj0311/two_tower_recommendation_system.git
